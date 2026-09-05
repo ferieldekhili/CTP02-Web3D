@@ -3,22 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TP02 Web3D - Exercice 1</title>
+    <title>TP02 Web3D</title>
 
     <!-- Bibliothèque A-Frame -->
     <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+
+    <!-- Moteur physique Cannon maintenu par la communauté A-Frame -->
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.4/dist/aframe-physics-system.min.js"></script>
+
+    <!-- Logique de déplacement du joueur -->
+    <script src="player-movement.js"></script>
+
+    <!-- Contrôle de la caméra orbitale -->
+    <script src="orbit-camera.js"></script>
   </head>
 
   <body>
-    <a-scene>
+    <a-scene physics="gravity: -18; friction: 0; restitution: 0; debug: false">
       <!-- Images chargées avant l'affichage de la scène -->
       <a-assets>
         <img id="texture-herbe" src="assets/herbe.png" alt="" />
         <img id="panorama" src="assets/panorama-campagne.png" alt="" />
+
+        <!-- Propriétés communes des cubes utilisés pour tester les collisions -->
+        <a-mixin
+          id="collision-cube"
+          geometry="primitive: box; width: 2; height: 2; depth: 2"
+          material="color: #3498db"
+          dynamic-body="shape: box; mass: 5; linearDamping: 0.15; angularDamping: 0.2"
+        ></a-mixin>
       </a-assets>
 
       <!-- Grand plan horizontal servant de sol -->
       <a-plane
+        id="ground"
         position="0 0 0"
         rotation="-90 0 0"
         width="100"
@@ -26,8 +44,51 @@
         material="src: #texture-herbe; repeat: 25 25; roughness: 1"
       ></a-plane>
 
+      <!-- Collider du sol placé sous le plan pour garder sa surface à y = 0 -->
+      <a-box
+        id="ground-collider"
+        position="0 -0.05 0"
+        width="100"
+        height="0.1"
+        depth="100"
+        visible="false"
+        static-body="shape: box"
+      ></a-box>
+
+      <!-- Le cube représente le joueur -->
+      <a-box
+        id="player"
+        position="0 1 0"
+        width="2"
+        height="2"
+        depth="2"
+        color="#e74c3c"
+        dynamic-body="shape: box; mass: 5; linearDamping: 0; angularDamping: 1"
+        player-movement="camera: #camera-rig; ground: #ground-collider"
+      ></a-box>
+
+      <!-- Cubes dynamiques disposés autour du joueur -->
+      <a-entity class="collision-cube" mixin="collision-cube" position="0 1 -7"></a-entity>
+      <a-entity class="collision-cube" mixin="collision-cube" position="6 1 -4"></a-entity>
+      <a-entity class="collision-cube" mixin="collision-cube" position="6 1 4"></a-entity>
+      <a-entity class="collision-cube" mixin="collision-cube" position="0 1 7"></a-entity>
+      <a-entity class="collision-cube" mixin="collision-cube" position="-6 1 4"></a-entity>
+      <a-entity class="collision-cube" mixin="collision-cube" position="-6 1 -4"></a-entity>
+
       <!-- Panorama à 360 degrés autour de la scène -->
       <a-sky src="#panorama"></a-sky>
+
+      <!-- Rig centré sur le joueur pour l'orbite horizontale -->
+      <a-entity id="camera-rig" orbit-camera="target: #player">
+        <!-- Pivot séparé pour limiter l'angle vertical -->
+        <a-entity data-orbit-pivot>
+          <a-camera
+            position="0 0 15"
+            wasd-controls="enabled: false"
+            look-controls="enabled: false"
+          ></a-camera>
+        </a-entity>
+      </a-entity>
     </a-scene>
   </body>
 </html>
