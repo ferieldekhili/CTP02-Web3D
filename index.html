@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TP02 Web3D - Exercice 1</title>
+
+    <!-- Bibliothèque A-Frame -->
+    <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+  </head>
+
+  <body>
+    <a-scene>
+      <!-- Images chargées avant l'affichage de la scène -->
+      <a-assets>
+        <img id="texture-herbe" src="assets/herbe.png" alt="" />
+        <img id="panorama" src="assets/panorama-campagne.png" alt="" />
+      </a-assets>
+
+      <!-- Grand plan horizontal servant de sol -->
+      <a-plane
+        position="0 0 0"
+        rotation="-90 0 0"
+        width="100"
+        height="100"
+        material="src: #texture-herbe; repeat: 25 25; roughness: 1"
+      ></a-plane>
+
+      <!-- Panorama à 360 degrés autour de la scène -->
+      <a-sky src="#panorama"></a-sky>
+    </a-scene>
+  </body>
+</html>
